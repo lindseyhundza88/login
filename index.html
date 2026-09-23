@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill4Time – Login Demo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #d8d8d8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 30px 16px 40px;
+  }
+
+  /* ── Training banner above the page ── */
+  .training-banner {
+    background: #1e4da1;
+    border-radius: 6px;
+    padding: 10px 20px;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .training-banner span {
+    font-size: 12px; font-weight: 600; color: #fff;
+  }
+  .training-badge {
+    font-size: 10px; font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    color: #fff; padding: 3px 10px;
+    border-radius: 10px; white-space: nowrap;
+  }
+
+  /* ── Bill4Time logo bar ── */
+  .b4t-logo-bar {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .b4t-logo {
+    font-size: 22px; font-weight: 300;
+    color: #333; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .b4t-logo .logo-icon {
+    font-size: 26px; color: #1e4da1; font-weight: 900; font-style: italic;
+  }
+
+  /* ── Login card ── */
+  .login-card {
+    display: flex;
+    width: 100%;
+    max-width: 860px;
+    border-radius: 6px;
+    overflow: visible;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    position: relative;
+  }
+
+  /* Left: Sign In form */
+  .signin-panel {
+    background: #fff;
+    flex: 0 0 420px;
+    padding: 36px 40px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 6px 0 0 6px;
+    position: relative;
+  }
+
+  .signin-title {
+    font-size: 24px; font-weight: 300;
+    color: #555; text-align: center;
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Floating label input style matching screenshot */
+  .field-wrap {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .field-wrap label {
+    position: absolute;
+    top: -8px; left: 10px;
+    font-size: 11px; color: #888;
+    background: #fff;
+    padding: 0 4px;
+    pointer-events: none;
+  }
+  .field-wrap input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #222;
+    outline: none;
+    background: #fff;
+  }
+  .field-wrap input:focus { border-color: #1e4da1; }
+  .field-wrap input.prefilled { color: #333; font-weight: 500; }
+  .field-wrap input.active-field { border-color: #1e4da1; border-width: 2px; }
+  .field-wrap label.active-label { color: #1e4da1; }
+
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 40px; }
+  .pw-eye {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: #aaa; font-size: 16px; cursor: pointer;
+  }
+
+  .remember-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 20px; margin-top: 2px;
+    font-size: 13px; color: #444;
+  }
+  .remember-row input[type=checkbox] {
+    width: 16px; height: 16px;
+    accent-color: #1e4da1;
+  }
+
+  .login-btn {
+    width: 100%;
+    background: #1e6fdc;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+  }
+  .login-btn:hover { background: #1a5bbf; }
+
+  .forgot-links {
+    text-align: center;
+    display: flex; flex-direction: column; gap: 5px;
+    margin-bottom: 28px;
+  }
+  .forgot-links a {
+    font-size: 12px; color: #1e6fdc;
+    text-decoration: none;
+  }
+
+  .new-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .new-divider .line { flex: 1; height: 1px; background: #ddd; }
+  .new-divider .label { font-size: 12px; color: #888; white-space: nowrap; }
+
+  .create-btn {
+    width: 100%;
+    background: #e8e8e8;
+    color: #888;
+    font-size: 14px;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: default;
+  }
+
+  /* Right: payments panel */
+  .payments-panel {
+    flex: 1;
+    background: linear-gradient(145deg, #1a2a6c 0%, #23389a 60%, #1e4da1 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 36px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .payments-logo {
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    opacity: 0.9; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .payments-logo .pipe { opacity: 0.4; }
+  .payments-logo .payments-word { opacity: 0.75; font-weight: 400; }
+
+  .payments-headline {
+    font-size: 30px; font-weight: 800;
+    line-height: 1.15; margin-bottom: 24px;
+    color: #fff;
+  }
+
+  .payments-features {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px 16px; margin-bottom: 28px;
+  }
+  .feat {
+    display: flex; align-items: flex-start; gap: 7px;
+    font-size: 12px; color: rgba(255,255,255,0.88); line-height: 1.35;
+  }
+  .feat-check {
+    color: #4cdf80; font-size: 14px; flex-shrink: 0; margin-top: 1px;
+  }
+
+  .activate-btn {
+    background: #e03030; color: #fff;
+    font-size: 13px; font-weight: 700;
+    padding: 13px 24px; border: none; border-radius: 4px;
+    cursor: pointer; letter-spacing: 0.06em;
+    text-transform: uppercase; display: inline-block;
+    margin-bottom: 20px; align-self: flex-start;
+  }
+
+  .card-logos {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .card-logo {
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px; padding: 4px 10px;
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+  .card-logo.visa    { color: #fff; }
+  .card-logo.mc      { color: #eb001b; background: #fff; }
+  .card-logo.disc    { color: #e65c00; background: #fff; }
+  .card-logo.amex    { color: #016fce; background: #fff; }
+  .card-logo.echeck  { color: #4cdf80; }
+
+  /* ── Annotation callouts ── */
+  .callout-wrap {
+    width: 100%;
+    max-width: 860px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 10px 14px;
+    position: relative;
+  }
+  .callout::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .callout.blue::before  { background: #1e4da1; }
+  .callout.yellow::before { background: #e0b020; }
+  .callout.green::before  { background: #1a7a1a; }
+
+  .callout-num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .blue  .callout-num  { background: #1e4da1; }
+  .yellow .callout-num { background: #e0b020; }
+  .green  .callout-num { background: #1a7a1a; }
+
+  .callout-body { flex: 1; }
+  .callout-title {
+    font-size: 12px; font-weight: 700; color: #111;
+    margin-bottom: 3px;
+  }
+  .callout-text { font-size: 11.5px; color: #444; line-height: 1.5; }
+  .callout-text strong { color: #111; }
+  .callout-text .pill {
+    display: inline-block;
+    background: #e8edf5; border: 1px solid #b0c4e8;
+    border-radius: 3px; font-size: 11px; font-weight: 700;
+    color: #1e4da1; padding: 0 7px;
+    font-family: 'Courier New', monospace;
+  }
+  .callout-text .pill.yellow {
+    background: #fff8dc; border-color: #e0c060; color: #7a5000;
+  }
+
+  /* Arrow pointing up to the field */
+  .arrow-up {
+    font-size: 10px; color: #1e4da1; margin-left: 4px;
+  }
+
+  /* Footer */
+  .b4t-footer {
+    margin-top: 14px;
+    font-size: 11px; color: #888;
+    text-align: center;
+    display: flex; gap: 16px; align-items: center; justify-content: center;
+  }
+  .b4t-footer a { color: #888; text-decoration: none; }
+  .b4t-footer .pipe { color: #ccc; }
+</style>
+</head>
+<body>
+
+<!-- Training banner -->
+<div class="training-banner">
+  <span>📋 Training Demo — Bill4Time Login Page</span>
+  <span class="training-badge">Step-by-step guide below</span>
+</div>
+
+<!-- B4T logo -->
+<div class="b4t-logo-bar">
+  <div class="b4t-logo">
+    <span class="logo-icon">4<sub style="font-size:14px;">7</sub></span>
+    BILL4TIME
+  </div>
+</div>
+
+<!-- Login card -->
+<div class="login-card">
+
+  <!-- Sign In panel -->
+  <div class="signin-panel">
+    <div class="signin-title">Sign In</div>
+
+    <!-- Company ID -->
+    <div class="field-wrap">
+      <label>Company ID</label>
+      <input type="text" class="prefilled" value="Morgan" readonly>
+    </div>
+
+    <!-- Username -->
+    <div class="field-wrap">
+      <label class="active-label">User Name</label>
+      <input type="text" class="active-field" placeholder="" value="">
+    </div>
+
+    <!-- Password -->
+    <div class="field-wrap pw-wrap">
+      <input type="password" placeholder="Password">
+      <span class="pw-eye">👁</span>
+    </div>
+
+    <!-- Remember me -->
+    <div class="remember-row">
+      <input type="checkbox" checked>
+      <span>Remember Me</span>
+    </div>
+
+    <!-- Log In -->
+    <button class="login-btn">Log In</button>
+
+    <!-- Forgot links -->
+    <div class="forgot-links">
+      <a href="#">Forgot Company ID or User Name?</a>
+      <a href="#">Forgot Password?</a>
+    </div>
+
+    <!-- New to Bill4Time -->
+    <div class="new-divider">
+      <div class="line"></div>
+      <div class="label">New to Bill4Time?</div>
+      <div class="line"></div>
+    </div>
+    <button class="create-btn">Create Account</button>
+  </div>
+
+  <!-- Payments panel -->
+  <div class="payments-panel">
+    <div class="payments-logo">
+      <span class="logo-icon" style="font-size:16px;color:#fff;">4<sub style="font-size:9px;">7</sub></span>
+      BILL4TIME <span class="pipe">|</span> <span class="payments-word">Payments</span>
+    </div>
+    <div class="payments-headline">Stop Waiting for<br>Paper Checks</div>
+    <div class="payments-features">
+      <div class="feat"><span class="feat-check">✓</span>70% faster payments</div>
+      <div class="feat"><span class="feat-check">✓</span>Industry-low, flat pricing</div>
+      <div class="feat"><span class="feat-check">✓</span>All credit cards and eChecks</div>
+      <div class="feat"><span class="feat-check">✓</span>ABA, IOLTA &amp; PCI compliant</div>
+    </div>
+    <button class="activate-btn">LOG IN TO ACTIVATE</button>
+    <div class="card-logos">
+      <span class="card-logo mc">MC</span>
+      <span class="card-logo visa">VISA</span>
+      <span class="card-logo disc">DISC</span>
+      <span class="card-logo amex">AMEX</span>
+      <span class="card-logo echeck">✓ eCheck</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Annotation callouts -->
+<div class="callout-wrap">
+
+  <div class="callout blue">
+    <div class="callout-num">1</div>
+    <div class="callout-body">
+      <div class="callout-title">Navigate to Bill4Time</div>
+      <div class="callout-text">
+        Go to <strong>https://secure.bill4time.com/b4t2/</strong> at the start of every workday. Bookmark this URL so you can find it quickly. Keep Bill4Time open throughout your entire shift.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout yellow">
+    <div class="callout-num">2</div>
+    <div class="callout-body">
+      <div class="callout-title">Company ID — always "Morgan"</div>
+      <div class="callout-text">
+        The <strong>Company ID</strong> field should always be <span class="pill yellow">Morgan</span> — this is pre-filled on the login page. Do not change it. If it is blank, type <span class="pill yellow">Morgan</span> exactly as shown.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-num">3</div>
+    <div class="callout-body">
+      <div class="callout-title">Username &amp; Password — check your email</div>
+      <div class="callout-text">
+        <strong>New hires:</strong> check your onboarding email for your username and temporary password. Enter them in the <strong>User Name</strong> and <strong>Password</strong> fields above. You will be prompted to set a new password on your first login.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-num">4</div>
+    <div class="callout-body">
+      <div class="callout-title">Keep Bill4Time open all day</div>
+      <div class="callout-text">
+        Once logged in, <strong>do not close Bill4Time.</strong> You should be logging time throughout your shift in real time. Closing the browser makes it easy to forget entries — keep it open in a pinned tab.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="b4t-footer">
+  <a href="#">About Bill4Time</a>
+  <span class="pipe">|</span>
+  <a href="#">Privacy Policy</a>
+  <span class="pipe">|</span>
+  <a href="#">Security Statement</a>
+</div>
+<div style="font-size:11px;color:#aaa;margin-top:6px;">©2026 Bill4Time All Rights Reserved</div>
+
+</body>
+</html>
